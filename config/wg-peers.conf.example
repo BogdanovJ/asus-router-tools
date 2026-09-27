@@ -1,0 +1,7 @@
+# WireGuard allowed-IP to friendly-name mapping.
+# Format: IP|Friendly name
+10.6.0.2|Jay
+10.6.0.3|VSG Phone
+10.6.0.4|VSG PC
+10.6.0.5|VSG Tablet
+10.6.0.6|MacBook

@@ -1,0 +1,9 @@
+# Copy to /jffs/configs/router-tools.conf on the router and fill in locally.
+# NEVER commit the real file.
+TELEGRAM_BOT_TOKEN="YOUR_BOT_TOKEN"
+TELEGRAM_CHAT_ID="YOUR_CHAT_ID"
+WG_INTERFACE="wgs1"
+WG_FALLBACK_PORT="443"
+NO_CLIENT_THRESHOLD="86400"
+ALERT_COOLDOWN="900"
+NO_CLIENT_COOLDOWN="86400"

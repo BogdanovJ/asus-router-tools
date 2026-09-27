@@ -1,0 +1,6 @@
+#!/bin/sh
+# ASUSWRT-Merlin startup hook: recreate cru jobs after boot.
+cru d wg_watchdog 2>/dev/null
+cru a wg_watchdog "*/5 * * * * /jffs/scripts/wg_watchdog.sh"
+cru d router_report 2>/dev/null
+cru a router_report "27 6 * * * /jffs/scripts/router_report.sh"

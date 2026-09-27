@@ -1,0 +1,58 @@
+#!/bin/sh
+# DuckDNS custom DDNS hook for Asuswrt-Merlin.
+# Secrets and the DuckDNS domain are kept outside the repository.
+
+CONFIG="/jffs/configs/duckdns.conf"
+TAG="ddns-duckdns"
+WAN_IP="$1"
+
+log() { logger -t "$TAG" "$*"; }
+finish() { /sbin/ddns_custom_updated "$1"; exit "$2"; }
+
+if [ ! -r "$CONFIG" ]; then
+    log "Config missing or unreadable: $CONFIG"
+    finish 0 1
+fi
+
+# shellcheck disable=SC1090
+. "$CONFIG"
+
+if [ -z "$DUCKDNS_DOMAIN" ]; then
+    log "DUCKDNS_DOMAIN is not configured"
+    finish 0 1
+fi
+
+TOKEN_FILE="${DUCKDNS_TOKEN_FILE:-/jffs/configs/duckdns.token}"
+
+# Merlin normally supplies the WAN IPv4 address as $1. If missing, DuckDNS
+# determines the public source IP. Reject obviously malformed arguments.
+if [ -n "$WAN_IP" ]; then
+    case "$WAN_IP" in
+        *[!0-9.]*) log "Invalid WAN IPv4 argument: $WAN_IP"; finish 0 1 ;;
+    esac
+fi
+
+if [ ! -r "$TOKEN_FILE" ]; then
+    log "Token file missing or unreadable: $TOKEN_FILE"
+    finish 0 1
+fi
+
+TOKEN=$(sed -n '1p' "$TOKEN_FILE" | tr -d '\r\n')
+if [ -z "$TOKEN" ]; then
+    log "Token file is empty"
+    finish 0 1
+fi
+
+URL="https://www.duckdns.org/update?domains=${DUCKDNS_DOMAIN}&token=${TOKEN}&ip=${WAN_IP}"
+RESULT=$(wget -q -T 20 -O - "$URL" 2>/dev/null)
+STATUS=$?
+TOKEN=""
+URL=""
+
+if [ "$STATUS" -eq 0 ] && [ "$RESULT" = "OK" ]; then
+    log "DuckDNS update succeeded for ${DUCKDNS_DOMAIN} (IP: ${WAN_IP:-auto})"
+    finish 1 0
+fi
+
+log "DuckDNS update FAILED for ${DUCKDNS_DOMAIN} (wget=$STATUS, response=${RESULT:-none})"
+finish 0 1

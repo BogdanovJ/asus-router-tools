@@ -1,0 +1,4 @@
+# Local DuckDNS configuration. Copy to /jffs/configs/duckdns.conf.
+# Do NOT commit your real domain/token configuration to a public repository.
+DUCKDNS_DOMAIN="your-subdomain"
+DUCKDNS_TOKEN_FILE="/jffs/configs/duckdns.token"
