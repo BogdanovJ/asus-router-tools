@@ -1,0 +1,11 @@
+# Copy to /jffs/configs/cluster-watchdog.conf
+HOSTS='cp|k3s control plane|192.168.50.71|cp
+k3s02|k3s02|192.168.50.72|worker
+k3s03|k3s03|192.168.50.73|worker'
+FAIL_THRESHOLD=5
+RECOVERY_THRESHOLD=2
+PING_TIMEOUT=2
+TCP_TIMEOUT=3
+SSH_PORT=22
+CP_API_PORT=6443
+TELEGRAM_CONFIG="/jffs/configs/router-tools.conf"
