@@ -42,8 +42,25 @@ if [ ! -f /jffs/configs/duckdns.conf ]; then
   echo "Created /jffs/configs/duckdns.conf — EDIT IT for DuckDNS."
 fi
 
+echo
+echo "Configuration check:"
+
+if grep -q 'YOUR_BOT_TOKEN' /jffs/configs/router-tools.conf 2>/dev/null ||
+   grep -q 'YOUR_CHAT_ID' /jffs/configs/router-tools.conf 2>/dev/null; then
+    echo "WARNING: Telegram credentials are not configured:"
+    echo "  /jffs/configs/router-tools.conf"
+else
+    echo "Telegram configuration: present"
+fi
+
+echo
+
 echo "Installed. Existing local configuration was preserved."
-echo "Test: /jffs/scripts/router_report.sh"
-echo "Test: /jffs/scripts/wg_watchdog.sh"
-echo "Test: /jffs/scripts/cluster_watchdog.sh"
-echo "When tests pass, run: /jffs/scripts/services-start"
+echo
+echo "Run these tests:"
+echo "  /jffs/scripts/router_report.sh"
+echo "  /jffs/scripts/wg_watchdog.sh"
+echo "  /jffs/scripts/cluster_watchdog.sh"
+echo
+echo "Only after the tests pass:"
+echo "  /jffs/scripts/services-start"

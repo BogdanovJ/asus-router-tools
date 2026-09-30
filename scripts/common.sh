@@ -2,9 +2,18 @@
 CONFIG="/jffs/configs/router-tools.conf"
 PEERS="/jffs/configs/wg-peers.conf"
 
-[ -r "$CONFIG" ] || { logger -t router-tools "missing $CONFIG"; exit 1; }
+if [ ! -r "$CONFIG" ]; then
+    logger -t router-tools "ERROR: missing configuration: $CONFIG"
+    echo "ERROR: missing configuration: $CONFIG" >&2
+    exit 1
+fi
+
 # shellcheck disable=SC1090
 . "$CONFIG"
+
+if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+    logger -t router-tools "ERROR: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not configured"
+fi
 
 : "${WG_INTERFACE:=wgs1}"
 : "${WG_FALLBACK_PORT:=443}"
@@ -13,13 +22,23 @@ PEERS="/jffs/configs/wg-peers.conf"
 : "${NO_CLIENT_COOLDOWN:=86400}"
 
 telegram_notify() {
-    [ -n "$TELEGRAM_BOT_TOKEN" ] && [ -n "$TELEGRAM_CHAT_ID" ] || return 1
-    curl -fsS -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
-      --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
-      --data-urlencode "text=$1" \
-      --data-urlencode "parse_mode=Markdown" >/dev/null
-}
+    if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_CHAT_ID" ]; then
+        logger -t router-tools "Telegram notification skipped: credentials not configured"
+        return 1
+    fi
 
+    if curl -fsS -X POST \
+        "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+        --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+        --data-urlencode "text=$1" \
+        --data-urlencode "parse_mode=Markdown" >/dev/null; then
+        return 0
+    fi
+
+    rc=$?
+    logger -t router-tools "Telegram notification failed (curl exit $rc)"
+    return "$rc"
+}
 peer_name() {
     ip="$1"
     if [ -r "$PEERS" ]; then

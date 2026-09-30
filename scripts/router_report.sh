@@ -40,4 +40,12 @@ FINAL_MSG="🏠 *Router Health Report: $(date +%Y-%m-%d)*
 
 📊 *WireGuard Activity*
 $WG_REPORT"
-telegram_notify "$FINAL_MSG"
+
+if telegram_notify "$FINAL_MSG"; then
+    logger -t router_report "daily Telegram report sent successfully"
+    exit 0
+else
+    rc=$?
+    logger -t router_report "daily Telegram report FAILED (exit $rc)"
+    exit "$rc"
+fi
