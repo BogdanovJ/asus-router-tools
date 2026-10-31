@@ -63,6 +63,7 @@ echo "Run these tests:"
 echo "  /jffs/scripts/router_report.sh"
 echo "  /jffs/scripts/wg_watchdog.sh"
 echo "  /jffs/scripts/cluster_watchdog.sh"
+echo "  /jffs/scripts/duckdns_watchdog.sh"
 echo
 echo "Only after the tests pass:"
 echo "  /jffs/scripts/services-start"
