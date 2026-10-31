@@ -11,12 +11,14 @@ cp scripts/router_report.sh /jffs/scripts/router_report.sh
 cp scripts/cluster_watchdog.sh /jffs/scripts/cluster_watchdog.sh
 cp scripts/ddns-start /jffs/scripts/ddns-start
 cp scripts/services-start /jffs/scripts/services-start
+cp scripts/duckdns_watchdog.sh /jffs/scripts/duckdns_watchdog.sh
 
 chmod 700 \
   /jffs/scripts/router-tools-common.sh \
   /jffs/scripts/wg_watchdog.sh \
   /jffs/scripts/router_report.sh \
-  /jffs/scripts/cluster_watchdog.sh
+  /jffs/scripts/cluster_watchdog.sh \
+  /jffs/scripts/duckdns_watchdog.sh
 chmod 755 /jffs/scripts/ddns-start /jffs/scripts/services-start
 
 if [ ! -f /jffs/configs/router-tools.conf ]; then
